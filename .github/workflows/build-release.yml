@@ -18,10 +18,10 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-        repository: Margele/NinebotEnhance
-        ref: v1.1.4
-        persist-credentials: false
+                        with:
+            repository: Margele/NinebotEnhance
+            ref: v1.1.4
+            persist-credentials: false
       - uses: ./.github/actions/setup-build
       - name: Test release automation
         run: python3 -m unittest discover -s tests/python -v
