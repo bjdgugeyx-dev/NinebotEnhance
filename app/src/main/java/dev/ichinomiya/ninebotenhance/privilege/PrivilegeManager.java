@@ -117,19 +117,29 @@ public final class PrivilegeManager {
     }
     /** Either value may be null to keep the saved one; the virtual display is refused on a phone that cannot run it. */
     public static void save(Context context, String source, String mode) {
-        SharedPreferences.Editor editor = context.getSharedPreferences("privilege", 0).edit();
-        if (source != null) {
-            PictureSource chosen = PictureSource.parse(source);
-            if (!chosen.allowed(Build.VERSION.SDK_INT)) throw new IllegalArgumentException("虚拟显示器仅限 Android 14+ 可用");
-            editor.putString("source", chosen.name());
-        }
-        if (mode != null) editor.putString("mode", PrivilegeMode.parse(mode).name());
-        editor.apply();
+    SharedPreferences.Editor editor =
+            context.getSharedPreferences("privilege", 0).edit();
+
+    PictureSource chosen =
+            source == null ? source(context) : PictureSource.parse(source);
+
+    if (!chosen.allowed(Build.VERSION.SDK_INT)) {
+        throw new IllegalArgumentException("虚拟显示器仅限 Android 14+ 可用");
     }
-    /** The daemon keeps uid 0 instead of dropping to shell: for ROMs that deny shell INJECT_EVENTS. Only Root and root-run Shizuku / Sui can honour it. */
-    public static boolean keepRoot(Context context) { return context.getSharedPreferences("privilege", 0).getBoolean("keep_root", false); }
-    public static void saveKeepRoot(Context context, boolean keep) { context.getSharedPreferences("privilege", 0).edit().putBoolean("keep_root", keep).apply(); }
-    public static void requestPermission() {
+
+    if (source != null) {
+        editor.putString("source", chosen.name());
+    }
+
+    if (chosen.virtual()) {
+        if (mode == null) {
+            throw new IllegalArgumentException("虚拟显示器需要选择授权方式");
+        }
+        editor.putString("mode", PrivilegeMode.parse(mode).name());
+    }
+
+    editor.apply();
+    }
         if (!Shizuku.pingBinder() || !binderReady) throw new IllegalStateException("授权服务尚未就绪，请先启动 Shizuku，或确认 Sui 已正常运行");
         if (Shizuku.getVersion() < 13) throw new IllegalStateException("请更新 Shizuku / Sui：需要服务端 API 13 或以上");
         if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) return;
