@@ -18,10 +18,6 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-        with:
-          repository: bjdgugexy-dev/NinebotEnhance
-          ref: main
-          persist-credentials: false
       - uses: ./.github/actions/setup-build
       - name: Test release automation
         run: python3 -m unittest discover -s tests/python -v
