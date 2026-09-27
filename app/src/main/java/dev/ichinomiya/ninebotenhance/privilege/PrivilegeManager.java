@@ -140,6 +140,8 @@ public final class PrivilegeManager {
 
     editor.apply();
     }
+    public static void
+    requestPermission() {
         if (!Shizuku.pingBinder() || !binderReady) throw new IllegalStateException("授权服务尚未就绪，请先启动 Shizuku，或确认 Sui 已正常运行");
         if (Shizuku.getVersion() < 13) throw new IllegalStateException("请更新 Shizuku / Sui：需要服务端 API 13 或以上");
         if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) return;
